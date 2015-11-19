@@ -11,6 +11,6 @@ if __name__ == '__main__':
     print("Peer summary: ", peer)
     print("Model summary: ", model)
     score = pythonrouge.pythonrouge(ROUGE, data_path, model, peer)
-
+    print(score)
     print("ROUGE-1: {0}\nROUGE-2: {1}\nROUGE-3: {2}\nROUGE-SU4: {3}".format(
         score["rouge-1"], score["rouge-2"], score["rouge-3"], score["rouge-su4"]))
