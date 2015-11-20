@@ -18,8 +18,6 @@ The only things you need to evaluate ROUGE score is to specify the paths of ROUG
 ```
 from pythonrouge import pythonrouge
 
-ROUGE = sys.argv[1] #ROUGE-1.5.5.pl
-data_path = sys.argv[2] #data folder in RELEASE-1.5.5
 peer = " Tokyo is the one of the biggest city in the world."
 model = "The capital of Japan, Tokyo, is the center of Japanese economy."
 score = pythonrouge.pythonrouge(ROUGE, data_path, model, peer)
