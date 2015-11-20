@@ -90,14 +90,11 @@ def pythonrouge(peer_sentence, model_sentence, ngram_order=3):
                             precision_list.append(float(su_match[0]))
                         if score == "F":
                             F_measure_list.append(float(su_match[0]))
+    
+    # you can return precision and recall if you add those list to result
     result = {}
     result["rouge-1"] = F_measure_list[0]
     result["rouge-2"] = F_measure_list[1]
     result["rouge-3"] = F_measure_list[2]
     result["rouge-su4"] = F_measure_list[3]
     return result
-
-
-
-
-
