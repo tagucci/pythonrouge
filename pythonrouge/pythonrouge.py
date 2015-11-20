@@ -7,8 +7,6 @@ from tempfile import mkdtemp
 import subprocess
 import sys
 
-
-
 def pythonrouge(ROUGE_path, data_path, guess_sentence, ref_sentence, ngram_order=3):
     temp_dir = tempfile.mkdtemp()
     summary_dir = os.path.join(temp_dir, 'peers')
