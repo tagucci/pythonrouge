@@ -6,19 +6,29 @@ In this implementation, you can evaluate ROUGE-1, ROUGE-2, ROUGE-3, and ROUGE-SU
 Any feedbacks or comments are welcome.
 
 # Install
+You can install pythonrouge in both ways
+
 ```
+# not using pip
 python setup.py install
+
+# using pip
+pip instal git+https://github.com/tagucci/pythonrouge.git
 ```
 Then, you can use pythonrouge.
 
 # Usage
 
+The only things you need to evaluate ROUGE score is to specify the paths of ROUGE-1.5.5.pl and RELEASE-1.5.5/data in this package.
+
 ```
 from pythonrouge import pythonrouge
 
+ROUGE = sys.argv[1] #ROUGE-1.5.5.pl
+data_path = sys.argv[2] #data folder in RELEASE-1.5.5
 peer = " Tokyo is the one of the biggest city in the world."
 model = "The capital of Japan, Tokyo, is the center of Japanese economy."
-score = pythonrouge.pythonrouge(peer, model)
+score = pythonrouge.pythonrouge(ROUGE, data_path, model, peer)
 print(score)
 ```
 
