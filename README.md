@@ -13,8 +13,6 @@ Then, you can use pythonrouge.
 
 # Usage
 
-The only things you need to evaluate ROUGE score is to specify the paths of ROUGE-1.5.5.pl and RELEASE-1.5.5/data in this package.
-
 ```
 from pythonrouge import pythonrouge
 
