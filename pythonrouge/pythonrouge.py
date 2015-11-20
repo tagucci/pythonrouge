@@ -7,7 +7,9 @@ from tempfile import mkdtemp
 import subprocess
 import sys
 
-def pythonrouge(ROUGE_path, data_path, peer_sentence, model_sentence, ngram_order=3):
+def pythonrouge(peer_sentence, model_sentence, ngram_order=3):
+    ROUGE_path = "./pythonrouge/RELEASE-1.5.5/ROUGE-1.5.5.pl"
+    data_path = "./pythonrouge/RELEASE-1.5.5/data"
     temp_dir = tempfile.mkdtemp()
     summary_dir = os.path.join(temp_dir, "model")
     reference_dir = os.path.join(temp_dir, "peer")
