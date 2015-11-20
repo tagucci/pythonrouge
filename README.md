@@ -20,7 +20,7 @@ from pythonrouge import pythonrouge
 
 peer = " Tokyo is the one of the biggest city in the world."
 model = "The capital of Japan, Tokyo, is the center of Japanese economy."
-score = pythonrouge.pythonrouge(ROUGE, data_path, model, peer)
+score = pythonrouge.pythonrouge(peer, model)
 print(score)
 ```
 
