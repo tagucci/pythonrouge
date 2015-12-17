@@ -15,7 +15,7 @@ python setup.py install
 # using pip
 pip install git+https://github.com/tagucci/pythonrouge.git
 ```
-Then, you can use pythonrouge.
+Then, you can use pythonrouge. If you don't have ROUGE package, I recommend you clone this repository to your local, and do "python setup.py install".
 
 # Usage
 
@@ -36,4 +36,19 @@ The output will be below. For convenience, only f_score will be output.
 
 ```
 {'rouge-1': 0.45455, 'rouge-2': 0.2, 'rouge-3': 0.11111, 'rouge-su4': 0.14545}
+```
+
+# Error Handling
+If you encounter following error message when you use pythonrouge
+
+```
+Cannot open exception db file for reading: /home/pythonrouge/pythonrouge/RELEASE-1.5.5/data/WordNet-2.0.exc.db
+```
+
+you can run pythonrouge by doing following.
+
+```
+cd pythonrouge/RELEASE-1.5.5/data/
+rm WordNet-2.0.exc.db
+./WordNet-2.0-Exceptions/buildExeptionDB.pl ./WordNet-2.0-Exceptions ./smart_common_words.txt ./WordNet-2.0.exc.db
 ```
