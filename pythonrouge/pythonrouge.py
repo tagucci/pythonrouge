@@ -62,7 +62,7 @@ def pythonrouge(peer_sentence, model_sentence, ROUGE_path, data_path,  ngram_ord
         xml_file.close()
     
     abs_xml_path = str(temp_dir+"/"+xml_path)
-    output = subprocess.check_output([ROUGE_path, "-e", data_path, "-a", "-m", "-2", "-4","-n", str(ngram_order), "-x", abs_xml_path])
+    output = subprocess.check_output([ROUGE_path, "-e", data_path, "-a", "-m", "-2", "-4","-n", str(ngram_order), "-x", abs_xml_path], stderr=subprocess.STDOUT)
     output = output.decode("utf-8")
     outputs = output.strip().split("\n")
 
