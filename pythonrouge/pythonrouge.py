@@ -6,6 +6,7 @@ import tempfile
 from tempfile import mkdtemp
 import subprocess
 import sys
+import shutil
 
 def pythonrouge(peer_sentence, model_sentence, ROUGE_path, data_path,  ngram_order=3):
     temp_dir = tempfile.mkdtemp()
@@ -95,4 +96,5 @@ def pythonrouge(peer_sentence, model_sentence, ROUGE_path, data_path,  ngram_ord
     result["rouge-2"] = F_measure_list[1]
     result["rouge-3"] = F_measure_list[2]
     result["rouge-su4"] = F_measure_list[3]
+    shutil.rmtree(temp_dir)
     return result
