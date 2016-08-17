@@ -8,7 +8,7 @@ import subprocess
 import sys
 import shutil
 
-def pythonrouge(peer_sentence, model_sentence, ROUGE_path, data_path):
+def pythonrouge(peer_sentence, model_sentence, ROUGE_path='./pythonrouge/RELEASE-1.5.5/ROUGE-1.5.5.pl', data_path='./pythonrouge/RELEASE-1.5.5/data'):
     temp_dir = tempfile.mkdtemp()
     summary_dir = os.path.join(temp_dir, "model")
     reference_dir = os.path.join(temp_dir, "peer")
@@ -60,6 +60,8 @@ def pythonrouge(peer_sentence, model_sentence, ROUGE_path, data_path):
         xml_file.close()
     
     abs_xml_path = str(temp_dir+"/"+xml_path)
+    ROUGE_path   = os.path.abspath(ROUGE_path)
+    data_path    = os.path.abspath(data_path)
     output = subprocess.check_output([ROUGE_path, "-e", data_path, "-a", "-m", "-2", "4","-n", "3", abs_xml_path], stderr=subprocess.STDOUT)
     output = output.decode("utf-8")
     outputs = output.strip().split("\n")
