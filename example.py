@@ -8,7 +8,7 @@ if __name__ == '__main__':
     model = "The capital of Japan, Tokyo, is the center of Japanese economy."
     print("Peer summary: ", peer)
     print("Model summary: ", model)
-    score = pythonrouge.pythonrouge(peer, model,"/PATH/TO/RELEASE-1.5.5/ROUGE-1.5.5.pl", "/PATH/TO/RELEASE-1.5.5/data")
+    score = pythonrouge.pythonrouge(peer, model)
     print("ROUGE-1: {0}\nROUGE-2: {1}\nROUGE-3: {2}\nROUGE-SU4: {3}\nROUGE-L: {4}".format(
         score["ROUGE-1"], score["ROUGE-2"], score["ROUGE-3"], score["ROUGE-SU4"], score["ROUGE-L"]))
 
