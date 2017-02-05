@@ -102,8 +102,8 @@ class Pythonrouge:
             file_name = sys.split("/")[-1].split(".")[0]
             refs  = glob.glob("{}/{}*".format(reference_path, file_name))
             xml_file.write('<EVAL ID="{}">\n'.format(n+1))
-            xml_file.write('<MODEL-ROOT>{}</MODEL-ROOT>\n'.format(reference_path))
-            xml_file.write('<PEER-ROOT>{}</PEER-ROOT>\n'.format(summary_path))
+            xml_file.write("<MODEL-ROOT>{}</MODEL-ROOT>\n".format(reference_path))
+            xml_file.write("<PEER-ROOT>{}</PEER-ROOT>\n".format(summary_path))
             xml_file.write('<INPUT-FORMAT TYPE="SPL">\n"</INPUT-FORMAT>\n')
             xml_file.write("<PEERS>\n")
             xml_file.write('<P ID="{}">{}</P>\n'.format('A', sys.split("/")[-1]))
