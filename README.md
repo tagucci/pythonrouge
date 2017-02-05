@@ -63,7 +63,8 @@ In this case, your directory format of system/reference summary directory should
 ./reference_path/summaryA.3.txt
 ./reference_path/summaryA.4.txt
 
-File name of reference summaries should be same as the system summary. In this case, system file is "summaryA.txt" and reference files should have "summaryA" in their file names.
+File name of reference summaries should be same as the system summary.
+In this case, system file is "summaryA.txt" and reference files should have "summaryA" in file names.
 ```
 
 After putting system/reference files as above, you can evaluate ROUGE metrics as blow.
