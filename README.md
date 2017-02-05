@@ -84,7 +84,6 @@ setting_file = rouge.setting(files=True, summary_path=summary_dir, reference_pat
 result = rouge.eval_rouge(setting_file, ROUGE_path=ROUGE_path, data_path=data_path)
 print(result)
 > {ROUGE-1': 0.29836, 'ROUGE-2': 0.07059, 'ROUGE-3': 0.03896, ', 'ROUGE-4': 0.02899, 'ROUGE-SU4': 0.12444}
-> {'ROUGE-1': 0.29836, 'ROUGE-2': 0.07059, 'ROUGE-3': 0.03896, 'ROUGE-4': 0.02899, 'ROUGE-L': 0.26632, 'ROUGE-SU4': 0.12444}
 ```
 
 
