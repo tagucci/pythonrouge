@@ -10,7 +10,7 @@ if __name__ == '__main__':
     summary_dir = "./sample/summary/"
     reference_dir = "./sample/reference/"
     # setting rouge options
-    rouge = Pythonrouge(n_gram=4, ROUGE_SU4=True, ROUGE_L=True, stemming=True, stopwords=True, word_level=True, length_limit=True, length=50, use_cf=False, cf=95, scoring_formula="average", resampling=True, samples=1000, favor=True, p=0.5)
+    rouge = Pythonrouge(n_gram=2, ROUGE_SU4=True, ROUGE_L=True, stemming=True, stopwords=True, word_level=True, length_limit=True, length=50, use_cf=False, cf=95, scoring_formula="average", resampling=True, samples=1000, favor=True, p=0.5)
     print("evaluate sumamry & reference in these dir\nsummary: {}\nreference: {}".format(summary_dir, reference_dir))
     print("\nAll metric")
     setting_file = rouge.setting(files=True, summary_path=summary_dir, reference_path=reference_dir)
