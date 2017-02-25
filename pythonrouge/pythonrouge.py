@@ -9,7 +9,7 @@ import sys
 import shutil
 
 class Pythonrouge:
-    def __init__(self, n_gram=2, ROUGE_SU4=True, ROUGE_L=False, stemming=True, stopwords=False, word_level=True, length_limit=True, length=100, use_cf=False, cf=95, scoring_formula="average", resampling=True, samples=1000, favor=True, p=0.5):
+    def __init__(self, n_gram=2, ROUGE_SU4=True, ROUGE_L=False, ROUGE_W=False, ROUGE_W_Weight=1.2, stemming=True, stopwords=False, word_level=True, length_limit=True, length=100, use_cf=False, cf=95, scoring_formula="average", resampling=True, samples=1000, favor=True, p=0.5):
         """
         n_gram: Compute ROUGE-N up to max-ngram length will be computed.
         ROUGE_SU4: Compute ROUGE-SU4 measures unigram and skip-bigram
@@ -31,6 +31,8 @@ class Pythonrouge:
         self.n_gram = n_gram
         self.ROUGE_SU4 = ROUGE_SU4
         self.ROUGE_L = ROUGE_L
+        self.ROUGE_W = ROUGE_W
+        self.ROUGE_W_Weight = ROUGE_W_Weight
         self.stemming = stemming
         self.stopwords = stopwords
         self.length_limit = length_limit
@@ -135,6 +137,9 @@ class Pythonrouge:
             rouge_cmd += "-2 4 -u".split()
         if not self.ROUGE_L:
             rouge_cmd.append("-x")
+        if self.ROUGE_W:
+            rouge_cmd.append("-w")
+            rouge_cmd.append(str(self.ROUGE_W_Weight))
         if self.length_limit:
             if self.length == 0: assert "Length limit should not be less than 1."
             if self.word_level:
@@ -202,6 +207,25 @@ class Pythonrouge:
                             result['ROUGE-L-P'] = float(l_p_match[0])
                         elif l_f_match and not f_measure_only:
                             result['ROUGE-L-F'] = float(l_f_match[0])
+            if self.ROUGE_W:
+                w_r_match = re.findall('A ROUGE-W-{} Average_R: ([0-9.]+)'.format(self.ROUGE_W_Weight), line)
+                w_p_match = re.findall('A ROUGE-W-{} Average_P: ([0-9.]+)'.format(self.ROUGE_W_Weight), line)
+                w_f_match = re.findall('A ROUGE-W-{} Average_F: ([0-9.]+)'.format(self.ROUGE_W_Weight), line)
+                if w_r_match:
+                    if recall_only:
+                        result['ROUGE-W-{}'.format(self.ROUGE_W_Weight)] = float(w_r_match[0])
+                    elif f_measure_only:
+                        pass
+                    else:
+                        result['ROUGE-W-{}-R'.format(self.ROUGE_W_Weight)] = float(w_r_match[0])
+                if not recall_only:
+                    if f_measure_only and w_f_match:
+                        result['ROUGE-W-{}'.format(self.ROUGE_W_Weight)] = float(w_f_match[0])
+                    else:
+                        if w_p_match and not f_measure_only:
+                            result['ROUGE-W-{}-P'.format(self.ROUGE_W_Weight)] = float(w_p_match[0])
+                        elif w_f_match and not f_measure_only:
+                            result['ROUGE-W-{}-F'.format(self.ROUGE_W_Weight)] = float(w_f_match[0])
             r_match = re.findall('A ROUGE-{} Average_R: ([0-9.]+)'.format(n), line)
             p_match = re.findall('A ROUGE-{} Average_P: ([0-9.]+)'.format(n), line)
             f_match = re.findall('A ROUGE-{} Average_F: ([0-9.]+)'.format(n), line)
