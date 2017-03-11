@@ -8,9 +8,8 @@ import subprocess
 import sys
 import shutil
 
-
 class Pythonrouge:
-    def __init__(self, n_gram=2, ROUGE_SU4=True, ROUGE_L=False, stemming=True, stopwords=False, word_level=True, length_limit=True, length=100, use_cf=False, cf=95, scoring_formula="average", resampling=True, samples=1000, favor=True, p=0.5):
+    def __init__(self, n_gram=2, ROUGE_SU4=True, ROUGE_L=False, ROUGE_W=False, ROUGE_W_Weight=1.2, stemming=True, stopwords=False, word_level=True, length_limit=True, length=100, use_cf=False, cf=95, scoring_formula="average", resampling=True, samples=1000, favor=True, p=0.5):
         """
         n_gram: Compute ROUGE-N up to max-ngram length will be computed.
         ROUGE_SU4: Compute ROUGE-SU4 measures unigram and skip-bigram
@@ -32,6 +31,8 @@ class Pythonrouge:
         self.n_gram = n_gram
         self.ROUGE_SU4 = ROUGE_SU4
         self.ROUGE_L = ROUGE_L
+        self.ROUGE_W = ROUGE_W
+        self.ROUGE_W_Weight = ROUGE_W_Weight
         self.stemming = stemming
         self.stopwords = stopwords
         self.length_limit = length_limit
@@ -46,7 +47,7 @@ class Pythonrouge:
         self.p = p
 
 
-    def setting(self, files=True, summary_path="./", reference_path="./", summary=[], reference=[], delete=True):
+    def setting(self, files=True, summary_path="./", reference_path="./", summary=[], reference=[], delete=True, temp_root=""):
         """
         files: If you've already saved sytem outputs and reference summaries in specific directory, choose 'True'.
                If you evaluate system outputs and summaries as lists of sentences, choose 'False'.
@@ -71,7 +72,11 @@ class Pythonrouge:
         reference = [[[summaryA_ref1_sent1, summaryA_ref1_sent2], [summaryA_ref2_sent1, summaryA_ref2_sent2]],
                      [[summaryB_ref1_sent1, summaryB_ref1_sent2], [summaryB_ref2_sent1, summaryB_ref2_sent2]]
         """
-        temp_dir = tempfile.mkdtemp()
+        if not temp_root:
+            temp_dir = tempfile.mkdtemp()
+        else:
+            temp_dir = tempfile.mkdtemp(dir=temp_root)
+
         # save input lists in temp_dir
         if not files:
             summary_path = os.path.join(temp_dir, "system")
@@ -99,18 +104,18 @@ class Pythonrouge:
         xml_file = open("{}".format(xml_path), "w")
         xml_file.write('<ROUGE-EVAL version="1.0">\n')
         for n, sys in enumerate(glob.glob("{}/*".format(summary_path))):
-            file_name = sys.split("/")[-1].split(".")[0]
+            file_name = os.path.splitext(os.path.basename(path))[0]
             refs  = glob.glob("{}/{}*".format(reference_path, file_name))
             xml_file.write('<EVAL ID="{}">\n'.format(n+1))
             xml_file.write("<MODEL-ROOT>{}</MODEL-ROOT>\n".format(reference_path))
             xml_file.write("<PEER-ROOT>{}</PEER-ROOT>\n".format(summary_path))
             xml_file.write('<INPUT-FORMAT TYPE="SPL">\n"</INPUT-FORMAT>\n')
             xml_file.write("<PEERS>\n")
-            xml_file.write('<P ID="{}">{}</P>\n'.format('A', sys.split("/")[-1]))
+            xml_file.write('<P ID="{}">{}</P>\n'.format('A', os.path.basename(sys)))
             xml_file.write("</PEERS>\n")
             xml_file.write("<MODELS>\n")
             for path, ids in zip(glob.glob("{}/{}*".format(reference_path, file_name)), ["A", "B", "C", "D", "E", "F", "G"]):
-                xml_file.write('<M ID="{}">{}</M>\n'.format(ids, path.split("/")[-1]))
+                xml_file.write('<M ID="{}">{}</M>\n'.format(ids, os.path.basename(path)))
             xml_file.write("</MODELS>\n")
             xml_file.write("</EVAL>\n")
         xml_file.write("</ROUGE-EVAL>\n")
@@ -123,7 +128,7 @@ class Pythonrouge:
     def eval_rouge(self, xml_path, recall_only=False, f_measure_only=False, ROUGE_path="./RELEASE-1.5.5/ROUGE-1.5.5.pl", data_path='./RELEASE-1.5.5/data'):
         ROUGE_path = os.path.abspath(ROUGE_path)
         data_path  = os.path.abspath(data_path)
-        rouge_cmd  = [ROUGE_path, "-e", data_path, "-a"]
+        rouge_cmd  = ['perl', ROUGE_path, "-e", data_path, "-a"]
         if recall_only and f_measure_only:
             assert("choose True in recall_only or f_measure_only, or set both as 'False'")
         if self.n_gram == 0: assert "n-gram should not be less than 1."
@@ -132,6 +137,9 @@ class Pythonrouge:
             rouge_cmd += "-2 4 -u".split()
         if not self.ROUGE_L:
             rouge_cmd.append("-x")
+        if self.ROUGE_W:
+            rouge_cmd.append("-w")
+            rouge_cmd.append(str(self.ROUGE_W_Weight))
         if self.length_limit:
             if self.length == 0: assert "Length limit should not be less than 1."
             if self.word_level:
@@ -199,6 +207,25 @@ class Pythonrouge:
                             result['ROUGE-L-P'] = float(l_p_match[0])
                         elif l_f_match and not f_measure_only:
                             result['ROUGE-L-F'] = float(l_f_match[0])
+            if self.ROUGE_W:
+                w_r_match = re.findall('A ROUGE-W-{} Average_R: ([0-9.]+)'.format(self.ROUGE_W_Weight), line)
+                w_p_match = re.findall('A ROUGE-W-{} Average_P: ([0-9.]+)'.format(self.ROUGE_W_Weight), line)
+                w_f_match = re.findall('A ROUGE-W-{} Average_F: ([0-9.]+)'.format(self.ROUGE_W_Weight), line)
+                if w_r_match:
+                    if recall_only:
+                        result['ROUGE-W-{}'.format(self.ROUGE_W_Weight)] = float(w_r_match[0])
+                    elif f_measure_only:
+                        pass
+                    else:
+                        result['ROUGE-W-{}-R'.format(self.ROUGE_W_Weight)] = float(w_r_match[0])
+                if not recall_only:
+                    if f_measure_only and w_f_match:
+                        result['ROUGE-W-{}'.format(self.ROUGE_W_Weight)] = float(w_f_match[0])
+                    else:
+                        if w_p_match and not f_measure_only:
+                            result['ROUGE-W-{}-P'.format(self.ROUGE_W_Weight)] = float(w_p_match[0])
+                        elif w_f_match and not f_measure_only:
+                            result['ROUGE-W-{}-F'.format(self.ROUGE_W_Weight)] = float(w_f_match[0])
             r_match = re.findall('A ROUGE-{} Average_R: ([0-9.]+)'.format(n), line)
             p_match = re.findall('A ROUGE-{} Average_P: ([0-9.]+)'.format(n), line)
             f_match = re.findall('A ROUGE-{} Average_F: ([0-9.]+)'.format(n), line)
