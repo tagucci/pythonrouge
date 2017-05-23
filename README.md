@@ -24,7 +24,7 @@ The only things you need to evaluate ROUGE score is to specify the paths of ROUG
 ```
 from pythonrouge.pythonrouge import Pythonrouge
 
-ROUGE = sys.argv[1] #ROUGE-1.5.5.pl
+ROUGE_path = sys.argv[1] #ROUGE-1.5.5.pl
 data_path = sys.argv[2] #data folder in RELEASE-1.5.5
 
 # initialize setting of ROUGE, eval ROUGE-1, 2, SU4, L
