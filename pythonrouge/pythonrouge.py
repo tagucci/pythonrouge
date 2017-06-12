@@ -104,7 +104,7 @@ class Pythonrouge:
         xml_file = open("{}".format(xml_path), "w")
         xml_file.write('<ROUGE-EVAL version="1.0">\n')
         for n, sys in enumerate(glob.glob("{}/*".format(summary_path))):
-            file_name = os.path.splitext(os.path.basename(path))[0]
+            file_name = os.path.splitext(os.path.basename(sys))[0]
             refs  = glob.glob("{}/{}*".format(reference_path, file_name))
             xml_file.write('<EVAL ID="{}">\n'.format(n+1))
             xml_file.write("<MODEL-ROOT>{}</MODEL-ROOT>\n".format(reference_path))
