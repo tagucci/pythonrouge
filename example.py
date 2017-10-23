@@ -12,7 +12,6 @@ if __name__ == '__main__':
     print('summary:\t{}\nreference:\t{}'.format(summary, reference))
     rouge = Pythonrouge(summary_file_exist=True,
                         peer_path=summary, model_path=reference,
-                        # ROUGE_path=ROUGE_dir, data_path=data_dir,
                         n_gram=2, ROUGE_SU4=True, ROUGE_L=False,
                         recall_only=True,
                         stemming=True, stopwords=True,
@@ -64,7 +63,6 @@ if __name__ == '__main__':
                   ]
     rouge = Pythonrouge(summary_file_exist=False,
                         summary=summary, reference=reference,
-                        # ROUGE_path=ROUGE_dir, data_path=data_dir,
                         n_gram=2, ROUGE_SU4=True, ROUGE_L=False,
                         recall_only=True, stemming=True, stopwords=True,
                         word_level=True, length_limit=True, length=50,
