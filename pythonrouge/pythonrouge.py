@@ -266,7 +266,7 @@ class Pythonrouge:
                 result['ROUGE-W-{}'.format(self.W_Weight)
                        ] = float(w_f_match[0])
             elif w_f_match and not self.recall_only:
-                result['ROUGE-W-{}-F'.format(self.ROUGE_W_Weight)
+                result['ROUGE-W-{}-F'.format(self.W_Weight)
                        ] = float(w_f_match[0])
         return result
 
