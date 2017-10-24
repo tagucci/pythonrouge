@@ -100,3 +100,8 @@ cd pythonrouge/RELEASE-1.5.5/data/
 rm WordNet-2.0.exc.db
 ./WordNet-2.0-Exceptions/buildExeptionDB.pl ./WordNet-2.0-Exceptions ./smart_common_words.txt ./WordNet-2.0.exc.db
 ```
+
+# TODO
+
+- [  ] enable to non-alphabetic languages such as japanese, chinese
+- [  ] add automated testing
