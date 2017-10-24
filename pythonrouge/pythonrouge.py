@@ -91,7 +91,8 @@ class Pythonrouge:
         self.summary_file_exist = summary_file_exist
         self.delete_xml = delete_xml
         self.xml_dir = xml_dir
-        # evaluation parameter
+        # evaluation parameter - you can check details of below in ROUGE
+        # directory pythonrouge/RELEASE-1.5.5/README.txt
         self.n_gram = n_gram
         self.ROUGE_SU4 = ROUGE_SU4
         self.ROUGE_L = ROUGE_L
@@ -112,15 +113,24 @@ class Pythonrouge:
         # evaluation outputs
         self.recall_only = recall_only
         self.f_measure_only = f_measure_only
+        # check size of system/reference summary length
         if not summary_file_exist and len(self.summary) != len(self.reference):
             assert('size of summary and refernece is different.')
+
+        # check output ROUGE types
         if self.recall_only and self.f_measure_only:
             assert("choose True in recall_only or f_measure_only,\
                     or set both as 'False'")
+
+        # check n-gram of ROUGE
         if self.n_gram == 0:
             assert 'n-gram should not be less than 1.'
+
+        # check the length of lenght limit
         if self.length_limit and self.length == 0:
             assert 'Length limit should not be less than 1.'
+
+        # check scoreing formula: best/average
         if self.scoring_formula != 'best' or self.scoring_formula == 'average':
             assert 'Choose scoreing formula "average" or "best"'
 
@@ -129,17 +139,22 @@ class Pythonrouge:
             temp_dir = mkdtemp()
         else:
             temp_dir = mkdtemp(dir=self.xml_dir)
-        # save input lists in temp_dir
+
+        # save summaries in temp_dir
         if not self.summary_file_exist:
             self.peer_path = os.path.join(temp_dir, 'system')
             self.model_path = os.path.join(temp_dir, 'reference')
             os.mkdir(self.peer_path)
             os.mkdir(self.model_path)
+
+            # save system summaries in temp_dir
             for i, doc in enumerate(self.summary):
                 path = os.path.join(self.peer_path, '{}.txt'.format(i))
                 with open(path, 'w') as f:
                     for sent in doc:
                         f.write('{}\n'.format(sent))
+
+            # save reference summaries in temp_dir
             for j, ref in enumerate(self.reference):
                 for k, doc in enumerate(ref):
                     path = os.path.join(self.model_path,
@@ -147,10 +162,14 @@ class Pythonrouge:
                     with open(path, 'w') as f:
                         for sent in doc:
                             f.write("{}\n".format(sent))
+
+        # set xml setting file path
         if self.delete_xml:
             xml_path = os.path.join(temp_dir, 'setting.xml')
         else:
             xml_path = 'setting.xml'
+
+        # write system/summary path to xml
         xml = open('{}'.format(xml_path), 'w')
         xml.write('<ROUGE-EVAL version="1.0">\n')
         for n, peer in enumerate(glob("{}/*".format(self.peer_path))):
@@ -178,32 +197,57 @@ class Pythonrouge:
         self.make_xml()
         rouge_cmd = ['perl', self.ROUGE_path, "-e", self.data_path, "-a"]
         rouge_cmd += '-n {}'.format(self.n_gram).split()
+        # ROUGE-SU4
         if self.ROUGE_SU4:
             rouge_cmd += '-2 4 -u'.split()
+
+        # ROUGE-L
         if not self.ROUGE_L:
             rouge_cmd.append('-x')
+
+        # ROUGE-W
         if self.ROUGE_W:
             rouge_cmd.append('-w')
             rouge_cmd.append(str(self.W_Weight))
+
+        # set length limit
         if self.length_limit:
+            # word level length limit
             if self.word_level:
                 rouge_cmd += '-l {}'.format(self.length).split()
+
+            # bytes level length limit
             else:
                 rouge_cmd += '-b {}'.format(self.length).split()
+
+        # stemming
         if self.stemming:
             rouge_cmd.append('-m')
+
+        # stopwords
         if self.stopwords:
             rouge_cmd.append('-s')
+
+        # confidence interval
         if self.use_cf:
             rouge_cmd += '-c {}'.format(self.cf).split()
+
+        # scoring based on averaging scores
         if self.scoring_formula == 'average':
             rouge_cmd += '-f A'.split()
+
+        # scoring based on best scores
         elif self.scoring_formula:
             rouge_cmd += '-f B'.split()
+
+        # the number of sampling point in bootstrap resampling
         if self.resampling:
             rouge_cmd += '-r {}'.format(self.samples).split()
+
+        # relative importance of recall and precision ROUGE scores
         if self.favor:
             rouge_cmd += '-p {}'.format(self.p).split()
+
         rouge_cmd.append(self.setting_file)
         return rouge_cmd
 
@@ -211,49 +255,64 @@ class Pythonrouge:
         result = dict()
         n = 1
         for l in lines:
+            # find ROUGE-N
             r_match = findall('A ROUGE-{} Average_R: ([0-9.]+)'.format(n), l)
             f_match = findall('A ROUGE-{} Average_F: ([0-9.]+)'.format(n), l)
+
             # ROUGE-N recall
             if self.recall_only and r_match:
                 result['ROUGE-{}'.format(n)] = float(r_match[0])
             elif r_match and not self.f_measure_only:
                 result['ROUGE-{}-R'.format(n)] = float(r_match[0])
+
             # ROUGE-N F-measure
             if self.f_measure_only and f_match:
                 result['ROUGE-{}'.format(n)] = float(f_match[0])
             elif f_match and not self.recall_only:
                 result['ROUGE-{}-F'.format(n)] = float(f_match[0])
+
             # count up ROUGE-N
             if f_match:
                 n += 1
+
+            # find ROUGE-SU4
             su_r_match = findall('A ROUGE-SU4 Average_R: ([0-9.]+)', l)
             su_f_match = findall('A ROUGE-SU4 Average_F: ([0-9.]+)', l)
+
             # ROUGE-SU4 Recall
             if self.recall_only and su_r_match:
                 result['ROUGE-SU4'] = float(su_r_match[0])
             elif su_r_match and not self.f_measure_only:
                 result['ROUGE-SU4-R'] = float(su_r_match[0])
+
             # ROUGE-SU4 F-measure
             if self.f_measure_only and su_f_match:
                 result['ROUGE-SU4'] = float(su_f_match[0])
             elif su_f_match and not self.recall_only:
                 result['ROUGE-SU4-F'] = float(su_f_match[0])
+
+            # find ROUGE-L
             l_r_match = findall('A ROUGE-L Average_R: ([0-9.]+)', l)
             l_f_match = findall('A ROUGE-L Average_F: ([0-9.]+)', l)
+
             # ROUGE-L Recall
             if self.recall_only and l_r_match:
                 result['ROUGE-L'] = float(l_r_match[0])
             elif l_r_match and not self.f_measure_only:
                 result['ROUGE-L-R'] = float(l_r_match[0])
+
             # ROUGE-L F-measure
             if self.f_measure_only and l_f_match:
                 result['ROUGE-L'] = float(l_f_match[0])
             elif l_f_match and not self.recall_only:
                 result['ROUGE-L-F'] = float(l_f_match[0])
+
+            # find ROUGE-W
             w_r_match = findall(
                 'A ROUGE-W-{} Average_R: ([0-9.]+)'.format(self.W_Weight), l)
             w_f_match = findall(
                 'A ROUGE-W-{} Average_F: ([0-9.]+)'.format(self.W_Weight), l)
+
             # ROUGE-W recall
             if self.recall_only and w_r_match:
                 result['ROUGE-W-{}'.format(self.W_Weight)
@@ -261,6 +320,7 @@ class Pythonrouge:
             elif w_r_match and not self.f_measure_only:
                 result['ROUGE-W-{}-R'.format(self.W_Weight)
                        ] = float(w_r_match[0])
+
             # ROUGE-W F-measure
             if self.f_measure_only and w_f_match:
                 result['ROUGE-W-{}'.format(self.W_Weight)
