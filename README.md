@@ -25,7 +25,7 @@ The only things you need to evaluate ROUGE score is to specify the paths of ROUG
 ```
 from pythonrouge.pythonrouge import Pythonrouge
 
-# system summary & reference summary
+# system summary(predict) & reference summary
 summary = [[" Tokyo is the one of the biggest city in the world."]]
 reference = [[["The capital of Japan, Tokyo, is the center of Japanese economy."]]]
 
@@ -66,6 +66,16 @@ In this case, your directory format of system/reference summary directory should
 
 File name of reference summaries should be same as the system summary.
 In this case, system file is "summaryA.txt" and reference files should have "summaryA" in file names.
+
+# Name Rule
+- system summary
+{NAME}.txt
+
+- reference summary
+{NAME}.{SUMMARY_ID}.txt
+
+In system and reference summary, {NAME} should be same as an above sample.
+If there are 4 gold summaries, {SUMMARY_ID} is [1, 2, 3, 4].
 ```
 
 After putting system/reference files as above, you can evaluate ROUGE metrics as blow.
@@ -100,8 +110,3 @@ cd pythonrouge/RELEASE-1.5.5/data/
 rm WordNet-2.0.exc.db
 ./WordNet-2.0-Exceptions/buildExeptionDB.pl ./WordNet-2.0-Exceptions ./smart_common_words.txt ./WordNet-2.0.exc.db
 ```
-
-# TODO
-
-- [  ] enable to non-alphabetic languages such as japanese, chinese
-- [  ] add automated testing
