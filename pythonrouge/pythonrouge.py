@@ -15,9 +15,9 @@ data_path = os.path.join("/".join(os.path.abspath(__file__).split("/")[:-1]) +
 
 class Pythonrouge:
     def __init__(self, summary_file_exist=True, summary=None, reference=None,
-                 delete_xml=True, xml_dir='./',
-                 recall_only=True, f_measure_only=False,
-                 peer_path='./', model_path='./',
+                 delete_xml=True, xml_dir='/tmp/',
+                 recall_only=False, f_measure_only=False,
+                 peer_path='/tmp/', model_path='/tmp/',
                  n_gram=2, ROUGE_SU4=True, ROUGE_L=False, ROUGE_W=False,
                  ROUGE_W_Weight=1.2, stemming=True, stopwords=False,
                  word_level=True, length_limit=True, length=100, use_cf=False,
@@ -136,38 +136,37 @@ class Pythonrouge:
 
     def make_xml(self):
         if not self.xml_dir:
-            temp_dir = mkdtemp()
+            tmp_dir = mkdtemp()
         else:
-            temp_dir = mkdtemp(dir=self.xml_dir)
+            tmp_dir = mkdtemp(dir=self.xml_dir)
 
-        # save summaries in temp_dir
+        # save summaries in tmp_dir
         if not self.summary_file_exist:
-            self.peer_path = os.path.join(temp_dir, 'system')
-            self.model_path = os.path.join(temp_dir, 'reference')
+            self.peer_path = os.path.join(tmp_dir, 'system')
+            self.model_path = os.path.join(tmp_dir, 'reference')
             os.mkdir(self.peer_path)
             os.mkdir(self.model_path)
 
-            # save system summaries in temp_dir
+            # save system summaries in tmp_dir
             for i, doc in enumerate(self.summary):
                 path = os.path.join(self.peer_path, '{}.txt'.format(i))
                 with open(path, 'w') as f:
                     for sent in doc:
                         f.write('{}\n'.format(sent))
 
-            # save reference summaries in temp_dir
+            # save reference summaries in tmp_dir
             for j, ref in enumerate(self.reference):
                 for k, doc in enumerate(ref):
                     path = os.path.join(self.model_path,
-                                        '{}_{}.txt'.format(j, k))
+                                        '{}.{}.txt'.format(j, k))
                     with open(path, 'w') as f:
                         for sent in doc:
                             f.write("{}\n".format(sent))
 
         # set xml setting file path
-        if self.delete_xml:
-            xml_path = os.path.join(temp_dir, 'setting.xml')
-        else:
-            xml_path = 'setting.xml'
+        xml_path = os.path.join(tmp_dir, 'setting.xml')
+        if not self.delete_xml:
+            print('setting file is saved at {}'.format(xml_path))
 
         # write system/summary path to xml
         xml = open('{}'.format(xml_path), 'w')
@@ -182,7 +181,7 @@ class Pythonrouge:
             xml.write('<P ID="{}">{}</P>\n'.format('A', basename(peer)))
             xml.write('</PEERS>\n')
             xml.write('<MODELS>\n')
-            model_paths = glob('{}/{}*'.format(self.model_path, file_name))
+            model_paths = glob('{}/{}.*'.format(self.model_path, file_name))
             for path, ids in zip(model_paths,
                                  [i for i in range(len(model_paths))]):
                 xml.write('<M ID="{}">{}</M>\n'.format(ids, basename(path)))
@@ -190,12 +189,12 @@ class Pythonrouge:
             xml.write('</EVAL>\n')
         xml.write('</ROUGE-EVAL>\n')
         xml.close()
-        self.temp_dir = temp_dir
+        self.tmp_dir = tmp_dir
         self.setting_file = xml_path
 
     def set_command(self):
         self.make_xml()
-        rouge_cmd = ['perl', self.ROUGE_path, "-e", self.data_path, "-a"]
+        rouge_cmd = ['perl', self.ROUGE_path, "-e", self.data_path, "-a", '-v']
         rouge_cmd += '-n {}'.format(self.n_gram).split()
         # ROUGE-SU4
         if self.ROUGE_SU4:
@@ -337,5 +336,5 @@ class Pythonrouge:
         output = output.strip().split('\n')
         result = self.parse_output(output)
         if self.delete_xml:
-            shutil.rmtree(self.temp_dir)
+            shutil.rmtree(self.tmp_dir)
         return result
