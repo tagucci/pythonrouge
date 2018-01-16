@@ -194,7 +194,7 @@ class Pythonrouge:
 
     def set_command(self):
         self.make_xml()
-        rouge_cmd = ['perl', self.ROUGE_path, "-e", self.data_path, "-a", '-v']
+        rouge_cmd = ['perl', self.ROUGE_path, "-e", self.data_path, "-a"]
         rouge_cmd += '-n {}'.format(self.n_gram).split()
         # ROUGE-SU4
         if self.ROUGE_SU4:
