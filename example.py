@@ -6,8 +6,6 @@ from pprint import pprint
 if __name__ == '__main__':
     summary = './sample/summary/'
     reference = './sample/reference/'
-    ROUGE_dir = './pythonrouge/RELEASE-1.5.5/ROUGE-1.5.5.pl'
-    data_dir = './pythonrouge/RELEASE-1.5.5/data/'
     print('evaluate sumamry & reference in these dirs')
     print('summary:\t{}\nreference:\t{}'.format(summary, reference))
     rouge = Pythonrouge(summary_file_exist=True,
