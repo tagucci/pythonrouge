@@ -12,7 +12,7 @@ while(defined($file=readdir(DIR))) {
 	    chomp($line);
 	    @tmp=split(/\s+/,$line);
 	    $exceptiondb{$tmp[0]}=$tmp[1];
-	    print $tmp[0],"\n";
+	    # print $tmp[0],"\n";
 	}
 	close(IN);
     }
