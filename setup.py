@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pythonrouge',
-    version='0.1',
+    version='0.2',
     description='python wrapper for ROUGE evaluation',
     url='http://github.com/tagucci/pythonrouge',
     author='tagucci',
