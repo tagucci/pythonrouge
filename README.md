@@ -106,9 +106,12 @@ Cannot open exception db file for reading: /home/pythonrouge/pythonrouge/RELEASE
 you can run pythonrouge by doing following.
 
 ```
+# move to pythonrouge dir you've installed
+cd pythonrouge/RELEASE-1.5.5/data/
 rm WordNet-2.0.exc.db # only if exist
-cd pythonrouge/RELEASE-1.5.5/data/WordNet-2.0-Exceptions
+cd WordNet-2.0-Exceptions
+rm WordNet-2.0.exc.db # only if exist
+./buildExeptionDB.pl . exc WordNet-2.0.exc.db
 cd ../
-rm WordNet-2.0.exc.db # only if exist
 ln -s WordNet-2.0-Exceptions/WordNet-2.0.exc.db WordNet-2.0.exc.db
 ```
