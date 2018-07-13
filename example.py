@@ -11,13 +11,13 @@ if __name__ == '__main__':
     rouge = Pythonrouge(summary_file_exist=True,
                         peer_path=summary, model_path=reference,
                         n_gram=2, ROUGE_SU4=True, ROUGE_L=False,
-                        recall_only=True,
+                        recall_only=False, f_measure_only=False,
                         stemming=True, stopwords=True,
                         word_level=True, length_limit=True, length=50,
-                        use_cf=False, cf=95, scoring_formula='average',
+                        use_cf=True, cf=95, scoring_formula='average',
                         resampling=True, samples=1000, favor=True, p=0.5)
     score = rouge.calc_score()
-    print('ROUGE-N(1-2) & SU4 F-measure only')
+    print('ROUGE-N(1-2) & SU4 recall & f-measure with confidence interval')
     pprint(score)
     print('Evaluate ROUGE based on sentecnce lists')
     """
@@ -64,8 +64,8 @@ if __name__ == '__main__':
                         n_gram=2, ROUGE_SU4=True, ROUGE_L=False,
                         recall_only=True, stemming=True, stopwords=True,
                         word_level=True, length_limit=True, length=50,
-                        use_cf=False, cf=95, scoring_formula='average',
+                        use_cf=True, cf=95, scoring_formula='average',
                         resampling=True, samples=1000, favor=True, p=0.5)
     score = rouge.calc_score()
-    print('ROUGE-N(1-2) & SU4 recall only')
+    print('ROUGE-N(1-2) & SU4 recall only with confidence interval')
     pprint(score)
