@@ -38,7 +38,7 @@ class Pythonrouge:
                       set True.
         length: Limit first N words/bytes of the system summary.
         use_cf: If True, you can use confidence interval to compute.
-        cf: Confidence interval (default is 95%)
+        cf: Confidence interval (default is 95%).
         scoring_formula: 'average' is calculated by model average. 'best' is
                          calculated by best model.
         resampling: Use bootstrap resampling.
@@ -64,6 +64,7 @@ class Pythonrouge:
         ./reference_path/summaryA.2.txt
         ./reference_path/summaryA.3.txt
         ./reference_path/summaryA.4.txt
+    
         In first N strings, reference summaries should have same file name
         as the system output file.
         delete: If True, the rouge setting file(setting.xml) is deleted.
@@ -261,15 +262,27 @@ class Pythonrouge:
             # ROUGE-N recall
             if self.recall_only and r_match:
                 result['ROUGE-{}'.format(n)] = float(r_match[0])
+                # confidence interval
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-{}-cf{}'.format(n, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
             elif r_match and not self.f_measure_only:
                 result['ROUGE-{}-R'.format(n)] = float(r_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-{}-R-cf{}'.format(n, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
 
             # ROUGE-N F-measure
             if self.f_measure_only and f_match:
                 result['ROUGE-{}'.format(n)] = float(f_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-{}-cf{}'.format(n, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
             elif f_match and not self.recall_only:
                 result['ROUGE-{}-F'.format(n)] = float(f_match[0])
-
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-{}-F-cf{}'.format(n, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
             # count up ROUGE-N
             if f_match:
                 n += 1
@@ -281,15 +294,26 @@ class Pythonrouge:
             # ROUGE-SU4 Recall
             if self.recall_only and su_r_match:
                 result['ROUGE-SU4'] = float(su_r_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-SU4-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
             elif su_r_match and not self.f_measure_only:
                 result['ROUGE-SU4-R'] = float(su_r_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-SU4-R-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
 
             # ROUGE-SU4 F-measure
             if self.f_measure_only and su_f_match:
                 result['ROUGE-SU4'] = float(su_f_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-SU4-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
             elif su_f_match and not self.recall_only:
                 result['ROUGE-SU4-F'] = float(su_f_match[0])
-
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-SU4-F-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
             # find ROUGE-L
             l_r_match = findall('A ROUGE-L Average_R: ([0-9.]+)', l)
             l_f_match = findall('A ROUGE-L Average_F: ([0-9.]+)', l)
@@ -297,14 +321,26 @@ class Pythonrouge:
             # ROUGE-L Recall
             if self.recall_only and l_r_match:
                 result['ROUGE-L'] = float(l_r_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-L-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
             elif l_r_match and not self.f_measure_only:
                 result['ROUGE-L-R'] = float(l_r_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-L-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
 
             # ROUGE-L F-measure
             if self.f_measure_only and l_f_match:
                 result['ROUGE-L'] = float(l_f_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-L-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
             elif l_f_match and not self.recall_only:
                 result['ROUGE-L-F'] = float(l_f_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-L-F-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
 
             # find ROUGE-W
             w_r_match = findall(
@@ -316,17 +352,29 @@ class Pythonrouge:
             if self.recall_only and w_r_match:
                 result['ROUGE-W-{}'.format(self.W_Weight)
                        ] = float(w_r_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-W-{}-cf{}'.format(self.W_Weight, ssssself.cf)] = tuple(float(i) for i in cf_match[0][1:])\
+
             elif w_r_match and not self.f_measure_only:
-                result['ROUGE-W-{}-R'.format(self.W_Weight)
-                       ] = float(w_r_match[0])
+                result['ROUGE-W-{}-R'.format(self.W_Weight)] = float(w_r_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-W-{}-R-cf{}'.format(self.W_Weight, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
 
             # ROUGE-W F-measure
             if self.f_measure_only and w_f_match:
-                result['ROUGE-W-{}'.format(self.W_Weight)
-                       ] = float(w_f_match[0])
+                result['ROUGE-W-{}'.format(self.W_Weight)] = float(w_f_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-W-{}-cf{}'.format(self.W_Weight, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
+
             elif w_f_match and not self.recall_only:
-                result['ROUGE-W-{}-F'.format(self.W_Weight)
-                       ] = float(w_f_match[0])
+                result['ROUGE-W-{}-F'.format(self.W_Weight)] = float(w_f_match[0])
+                if self.use_cf:
+                    cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
+                    result['ROUGE-W-{}-cf{}'.format(self.W_Weight, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
+
         return result
 
     def calc_score(self):
