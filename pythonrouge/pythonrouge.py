@@ -257,6 +257,7 @@ class Pythonrouge:
         for l in lines:
             # find ROUGE-N
             r_match = findall('A ROUGE-{} Average_R: ([0-9.]+)'.format(n), l)
+            p_match = findall('A ROUGE-{} Average_P: ([0-9.]+)'.format(n), l)
             f_match = findall('A ROUGE-{} Average_F: ([0-9.]+)'.format(n), l)
 
             # ROUGE-N recall
@@ -283,12 +284,17 @@ class Pythonrouge:
                 if self.use_cf:
                     cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
                     result['ROUGE-{}-F-cf{}'.format(n, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
+
+            # ROUGE-N P-measure
+            if p_match and not self.recall_only:
+                result['ROUGE-{}-P'.format(n)] = float(p_match[0])
             # count up ROUGE-N
             if f_match:
                 n += 1
 
             # find ROUGE-SU4
             su_r_match = findall('A ROUGE-SU4 Average_R: ([0-9.]+)', l)
+            su_p_match = findall('A ROUGE-SU4 Average_P: ([0-9.]+)', l)
             su_f_match = findall('A ROUGE-SU4 Average_F: ([0-9.]+)', l)
 
             # ROUGE-SU4 Recall
@@ -314,8 +320,12 @@ class Pythonrouge:
                 if self.use_cf:
                     cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
                     result['ROUGE-SU4-F-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
+            # ROUGE-SU4 P-measure
+            if su_p_match and not self.recall_only:
+                result['ROUGE-SU4-P'] = float(su_p_match[0])
             # find ROUGE-L
             l_r_match = findall('A ROUGE-L Average_R: ([0-9.]+)', l)
+            l_p_match = findall('A ROUGE-L Average_P: ([0-9.]+)', l)
             l_f_match = findall('A ROUGE-L Average_F: ([0-9.]+)', l)
 
             # ROUGE-L Recall
@@ -342,9 +352,14 @@ class Pythonrouge:
                     cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
                     result['ROUGE-L-F-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
 
+            # ROUGE-L P-measure
+            if l_p_match and not self.recall_only:
+                result['ROUGE-L-P'] = float(l_p_match[0])
             # find ROUGE-W
             w_r_match = findall(
                 'A ROUGE-W-{} Average_R: ([0-9.]+)'.format(self.W_Weight), l)
+            w_p_match = findall(
+                'A ROUGE-W-{} Average_P: ([0-9.]+)'.format(self.W_Weight), l)
             w_f_match = findall(
                 'A ROUGE-W-{} Average_F: ([0-9.]+)'.format(self.W_Weight), l)
 
@@ -375,6 +390,9 @@ class Pythonrouge:
                     cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
                     result['ROUGE-W-{}-cf{}'.format(self.W_Weight, self.cf)] = tuple(float(i) for i in cf_match[0][1:])
 
+            # ROUGE-W P-measure
+            if w_p_match and not self.recall_only:
+                result['ROUGE-W-{}-P'.format(self.W_Weight)] = float(w_p_match[0])
         return result
 
     def calc_score(self):
