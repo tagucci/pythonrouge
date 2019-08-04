@@ -338,7 +338,7 @@ class Pythonrouge:
                 result['ROUGE-L-R'] = float(l_r_match[0])
                 if self.use_cf:
                     cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
-                    result['ROUGE-L-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
+                    result['ROUGE-L-R-cf{}'.format(self.cf)] = tuple(float(i) for i in cf_match[0][1:])
 
             # ROUGE-L F-measure
             if self.f_measure_only and l_f_match:
