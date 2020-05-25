@@ -369,7 +369,7 @@ class Pythonrouge:
                        ] = float(w_r_match[0])
                 if self.use_cf:
                     cf_match = findall('({}%-conf.int. ([0-9.]+) - ([0-9.]+))'.format(self.cf), l)
-                    result['ROUGE-W-{}-cf{}'.format(self.W_Weight, ssssself.cf)] = tuple(float(i) for i in cf_match[0][1:])\
+                    result['ROUGE-W-{}-cf{}'.format(self.W_Weight, self.cf)] = tuple(float(i) for i in cf_match[0][1:])\
 
             elif w_r_match and not self.f_measure_only:
                 result['ROUGE-W-{}-R'.format(self.W_Weight)] = float(w_r_match[0])
